@@ -1,0 +1,160 @@
+{
+  "name": "Pembuatan Agen AI Chatbot Web dengan Data Google Sheets dan n8n Self-Host",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋, How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        16
+      ],
+      "id": "309f52c6-5c90-499d-9a28-6afafe68e779",
+      "name": "When chat message received",
+      "webhookId": "eed397f5-9cfa-49c2-abea-5f14d2ee572f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Anda adalah AI assistant untuk toko elektronik.\n\nTugas Anda:\n- Menjawab pertanyaan user hanya berdasarkan data dari Google Sheets.\n- Gunakan tool Google Sheets untuk mencari informasi produk.\n\nInstruksi:\n- Jika user bertanya tentang produk atau harga, gunakan tool.\n- Jangan mengarang jawaban.\n- Jika data tidak ditemukan, katakan \"Data tidak tersedia\".\n- Jawab dengan singkat, jelas, dan informatif.\n\nFormat jawaban:\nNama Produk:\nDeskripsi:\nHarga:"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        240,
+        16
+      ],
+      "id": "607ec12e-03a7-4fca-8fcb-cc84e5410b39",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        224
+      ],
+      "id": "67bc5cc2-fdd9-40d9-91d8-ee0320c02c85",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1C85EJ8FSdMMZtzci0SC1xzL8aA98CyDODWgX2wGfIPg",
+          "mode": "list",
+          "cachedResultName": "Data elektronik",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1C85EJ8FSdMMZtzci0SC1xzL8aA98CyDODWgX2wGfIPg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1C85EJ8FSdMMZtzci0SC1xzL8aA98CyDODWgX2wGfIPg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        224
+      ],
+      "id": "4b7990a8-fa81-42ce-a630-8c2aa409e140",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8oAo6aCmfBcaUlu3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        112,
+        224
+      ],
+      "id": "b0e57ec4-cd91-459c-ad6d-32ae10495dec",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "d5PGHOkRvDJkD8ZK",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1d4eda34-3301-487a-9951-cff3dc3c5044",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d58010754d938a78e4ec321c959a6424a2416df2b7692557ca66564445920376"
+  },
+  "id": "VnfR3jFQ8HBhJp6F",
+  "tags": []
+}
